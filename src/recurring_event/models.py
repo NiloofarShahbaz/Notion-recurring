@@ -3,7 +3,7 @@ from enum import Enum
 
 from pony import orm
 
-from src.server import db
+from src.database import db
 
 
 class IntervalTypes(Enum):
@@ -17,7 +17,7 @@ class RecurringEvent(db.Entity):
     id = orm.PrimaryKey(int, auto=True)
     title = orm.Required(str)
     start = orm.Required(datetime, default=datetime.now)
-    interval = orm.Required(str, default=IntervalTypes.DAY, py_check=lambda x: x in IntervalTypes)
+    interval = orm.Required(str, default=IntervalTypes.DAY.value, py_check=lambda x: hasattr(IntervalTypes, x))
     interval_count = orm.Required(int, default=1)
     description = orm.Optional(str)
 
