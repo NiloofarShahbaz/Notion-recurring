@@ -1,7 +1,9 @@
+from datetime import datetime
 from enum import Enum
 
-from tortoise import fields
-from tortoise.models import Model
+from pony import orm
+
+from src.server import db
 
 
 class IntervalTypes(Enum):
@@ -11,13 +13,13 @@ class IntervalTypes(Enum):
     YEAR = "YEAR"
 
 
-class RecurringEvent(Model):
-    id = fields.IntField(pk=True)
-    title = fields.TextField()
-    start = fields.DatetimeField(auto_now_add=True)
-    interval = fields.CharEnumField(enum_type=IntervalTypes, max_length=5, default=IntervalTypes.DAY)
-    interval_count = fields.SmallIntField()
-    description = fields.TextField()
+class RecurringEvent(db.Entity):
+    id = orm.PrimaryKey(int, auto=True)
+    title = orm.Required(str)
+    start = orm.Required(datetime, default=datetime.now)
+    interval = orm.Required(str, default=IntervalTypes.DAY, py_check=lambda x: x in IntervalTypes)
+    interval_count = orm.Required(int, default=1)
+    description = orm.Optional(str)
 
     def __str__(self):
-        return self.title
+        return self.id
